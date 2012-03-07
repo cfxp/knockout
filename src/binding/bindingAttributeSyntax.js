@@ -3,11 +3,13 @@
 
     ko.bindingContext = function(dataItem, parentBindingContext) {
         if (parentBindingContext) {
-            ko.utils.extend(this, parentBindingContext); // Inherit $root and any custom properties
+            ko.utils.extend(this, parentBindingContext); // Inherit $root, $parent(s) and any custom properties
             this['$parentContext'] = parentBindingContext;
-            this['$parent'] = parentBindingContext['$data'];
-            this['$parents'] = (parentBindingContext['$parents'] || []).slice(0);
-            this['$parents'].unshift(this['$parent']);
+            if (dataItem !== parentBindingContext['$data']) {   // set new $parent only if data value is different
+                this['$parent'] = parentBindingContext['$data'];
+                this['$parents'] = (parentBindingContext['$parents'] || []).slice(0);
+                this['$parents'].unshift(this['$parent']);
+            }
         } else {
             this['$parents'] = [];
             this['$root'] = dataItem;        	
