@@ -1,11 +1,11 @@
 (function () {
     ko.bindingHandlers = {};
 
-    ko.bindingContext = function(dataItem, parentBindingContext) {
+    ko.bindingContext = function(dataItem, parentBindingContext, isExtending) {
         if (parentBindingContext) {
             ko.utils.extend(this, parentBindingContext); // Inherit $root, $parent(s) and any custom properties
             this['$parentContext'] = parentBindingContext;
-            if (dataItem !== parentBindingContext['$data']) {   // set new $parent only if data value is different
+            if (!isExtending || dataItem !== parentBindingContext['$data']) {   // set new $parent unless extending or if data value is different
                 this['$parent'] = parentBindingContext['$data'];
                 this['$parents'] = (parentBindingContext['$parents'] || []).slice(0);
                 this['$parents'].unshift(this['$parent']);
@@ -20,7 +20,7 @@
         return new ko.bindingContext(dataItem, this);
     };
     ko.bindingContext.prototype['extend'] = function(properties) {
-        var clone = new ko.bindingContext(this['$data'], this);
+        var clone = new ko.bindingContext(this['$data'], this, /* isExtending */ true);
         return ko.utils.extend(clone, properties);
     };
 
